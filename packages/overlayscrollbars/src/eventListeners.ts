@@ -45,6 +45,8 @@ export interface OnUpdatedEventListenerArgs {
  * A mapping between event names and their listener arguments.
  */
 export type EventListenerArgs = {
+  /** Dispatched before app calls Resize observer. */
+  beforeResize: [instance: OverlayScrollbars];
   /** Dispatched after all elements are initialized and appended. */
   initialized: [instance: OverlayScrollbars];
   /** Dispatched after an update. */

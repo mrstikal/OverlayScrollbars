@@ -39,6 +39,19 @@ export type SizeObserver = () => () => void;
 
 let resizeObserverBoxSupport: boolean | null = null;
 
+type BeforeResizeListener = (instance?: OverlayScrollbars) => void | Promise<void>;
+const beforeResizeListeners: BeforeResizeListener[] = [];
+
+export function onBeforeResizeObserverInit(listener: BeforeResizeListener) {
+  beforeResizeListeners.push(listener);
+}
+
+export async function triggerBeforeResizeObserverInit(instance?: OverlayScrollbars) {
+  for (const listener of beforeResizeListeners) {
+    await listener(instance);
+  }
+}
+
 /**
  * Creates a size observer which observes any size, padding, border, margin and box-sizing changes of the target element. Depending on the options also direction and appear can be observed.
  * @param target The target element which shall be observed.
@@ -50,7 +63,8 @@ export const createSizeObserver = (
   target: HTMLElement,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSizeChangedCallback: (params: SizeObserverCallbackParams) => any,
-  options?: SizeObserverOptions
+  options?: SizeObserverOptions,
+  instance?: OverlayScrollbars
 ): SizeObserver => {
   const { _appear: observeAppearChange } = options || {};
   const sizeObserverPlugin =
@@ -59,6 +73,9 @@ export const createSizeObserver = (
     _initialValue: false,
     _alwaysUpdateValues: true,
   });
+  if (typeof triggerEvent === 'function' && instance) {
+    await triggerEvent('y', instance);
+  }
 
   return () => {
     const destroyFns: (() => void)[] = [];
@@ -96,6 +113,8 @@ export const createSizeObserver = (
         });
       }
     };
+
+    await triggerBeforeResizeObserverInit(instance);
 
     if (ResizeObserverConstructor) {
       if (!isBoolean(resizeObserverBoxSupport)) {
