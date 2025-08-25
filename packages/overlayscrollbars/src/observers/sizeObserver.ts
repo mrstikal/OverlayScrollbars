@@ -133,6 +133,14 @@ export const createSizeObserver = (
       });
       const resizeObserverCallback = (entries: ResizeObserverEntry[]) =>
         debouncedOnSizeChangedCallbackProxy(entries);
+
+      if (typeof options?.callbacks?.beforeResizeObserverInit === 'function') {
+        const result = options.callbacks.beforeResizeObserverInit();
+        if (result && typeof result.then === 'function') {
+          await result;
+        }
+      }
+
       const contentBoxResizeObserver = new ResizeObserverConstructor(resizeObserverCallback);
       contentBoxResizeObserver.observe(resizeObserverBoxSupport ? target : polyfillTargetElement);
 
