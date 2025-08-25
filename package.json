@@ -4,10 +4,9 @@
   "workspaces": [
     "packages/*"
   ],
-  {
-    "name": "overlayscrollbars",
-    "version": "1.0.0"
-  },
+  "name": "overlayscrollbars",
+  "version": "1.0.0"
+},
   "devDependencies": {
     "@~local/browser-testing": "file:./local/browser-testing",
     "@~local/config": "file:./local/config",
